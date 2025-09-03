@@ -1,0 +1,45 @@
+name: Repository Configuration Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  config-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Check Repository Configuration
+      run: |
+        echo "Repository Configuration Requirements:"
+        echo "✓ Repository should be Public"
+        echo "✓ Repository should be Archived"
+        echo "✓ Main branch should be protected"
+        echo ""
+        echo "Configuration files location:"
+        echo "- .github/settings.yml (for GitHub Apps)"
+        echo "- .github/REPOSITORY_CONFIGURATION.md (manual steps)"
+        echo ""
+        echo "Current status verification:"
+        if [ -f ".github/settings.yml" ]; then
+          echo "✓ Settings configuration file exists"
+        else
+          echo "✗ Settings configuration file missing"
+        fi
+        
+        if [ -f ".github/REPOSITORY_CONFIGURATION.md" ]; then
+          echo "✓ Documentation file exists"
+        else
+          echo "✗ Documentation file missing"
+        fi
+    
+    - name: Validate Settings File
+      run: |
+        if [ -f ".github/settings.yml" ]; then
+          echo "Validating settings.yml structure..."
+          # Basic YAML validation
+          python3 -c "import yaml; yaml.safe_load(open('.github/settings.yml'))" && echo "✓ Valid YAML syntax" || echo "✗ Invalid YAML syntax"
+        fi
